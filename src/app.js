@@ -1,5 +1,5 @@
-import { DECK_DATA, FAKE_CARDS, REAL_CARDS } from "./data.js";
-import { clampFakePercent, pickFlashcard } from "./deck.js";
+import { DECK_DATA, FAKE_CARDS, REAL_CARDS } from "./data.js?v=20260601-marked-headers";
+import { clampFakePercent, pickFlashcard } from "./deck.js?v=20260601-marked-headers";
 
 const STORAGE_KEY = "tupfelquiz:flashcards:v1";
 
