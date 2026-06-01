@@ -3,7 +3,9 @@ export const DECK_DATA = {
     "workbook": "Tüpfeltabelle.xlsx",
     "sheet": "RAW",
     "markerSheet": "Export important",
-    "pinkRule": "Rows are selected when column A is filled in the marker sheet; columns are selected when row 1 is filled.",
+    "selectedRowRange": "Export important!A2:A29",
+    "selectedColumnRange": "Export important!B1:AA1",
+    "pinkRule": "Rows are selected only from A2:A29 when column A is filled; columns are selected only from B1:AA1 when row 1 is filled.",
     "selectedRows": [
       "Ag+",
       "Ba2+",
@@ -37,8 +39,7 @@ export const DECK_DATA = {
       "SCN-",
       "I-",
       "NO3-",
-      "PO43-",
-      "SO32-"
+      "PO43-"
     ]
   },
   "cards": [
@@ -131,14 +132,6 @@ export const DECK_DATA = {
       "fill": ""
     },
     {
-      "id": "ag__so32",
-      "cation": "Ag+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH3",
-      "product": "weiß i. Sulfit Ü.l.",
-      "fill": ""
-    },
-    {
       "id": "ba2__oh",
       "cation": "Ba2+",
       "anion": "OH-",
@@ -200,14 +193,6 @@ export const DECK_DATA = {
       "anion": "PO43-",
       "sourceCell": "RAW!V4",
       "product": "fein",
-      "fill": ""
-    },
-    {
-      "id": "ba2__so32",
-      "cation": "Ba2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH4",
-      "product": "weiß l in HNO3",
       "fill": ""
     },
     {
@@ -363,14 +348,6 @@ export const DECK_DATA = {
       "fill": ""
     },
     {
-      "id": "fe3__so32",
-      "cation": "Fe3+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH7",
-      "product": "orange Lösung",
-      "fill": ""
-    },
-    {
       "id": "h3o__oh",
       "cation": "H3O+",
       "anion": "OH-",
@@ -400,14 +377,6 @@ export const DECK_DATA = {
       "anion": "CrO42-",
       "sourceCell": "RAW!K8",
       "product": "orange-Färbung",
-      "fill": ""
-    },
-    {
-      "id": "h3o__so32",
-      "cation": "H3O+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH8",
-      "product": "stechender SO2 Geruch, langsam S Bildung",
       "fill": ""
     },
     {
@@ -799,12 +768,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V5"
     },
     {
-      "id": "fake__cu2__so32",
-      "cation": "Cu2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH5"
-    },
-    {
       "id": "fake__fe2__cl",
       "cation": "Fe2+",
       "anion": "Cl-",
@@ -839,12 +802,6 @@ export const DECK_DATA = {
       "cation": "Fe2+",
       "anion": "PO43-",
       "sourceCell": "RAW!V6"
-    },
-    {
-      "id": "fake__fe2__so32",
-      "cation": "Fe2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH6"
     },
     {
       "id": "fake__fe3__cl",
@@ -997,12 +954,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V9"
     },
     {
-      "id": "fake__k__so32",
-      "cation": "K+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH9"
-    },
-    {
       "id": "fake__li__oh",
       "cation": "Li+",
       "anion": "OH-",
@@ -1073,12 +1024,6 @@ export const DECK_DATA = {
       "cation": "Li+",
       "anion": "PO43-",
       "sourceCell": "RAW!V10"
-    },
-    {
-      "id": "fake__li__so32",
-      "cation": "Li+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH10"
     },
     {
       "id": "fake__na__oh",
@@ -1153,12 +1098,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V11"
     },
     {
-      "id": "fake__na__so32",
-      "cation": "Na+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH11"
-    },
-    {
       "id": "fake__nh4__oh",
       "cation": "NH4+",
       "anion": "OH-",
@@ -1225,12 +1164,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V12"
     },
     {
-      "id": "fake__nh4__so32",
-      "cation": "NH4+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH12"
-    },
-    {
       "id": "fake__ni2__cl",
       "cation": "Ni2+",
       "anion": "Cl-",
@@ -1277,12 +1210,6 @@ export const DECK_DATA = {
       "cation": "Ni2+",
       "anion": "PO43-",
       "sourceCell": "RAW!V13"
-    },
-    {
-      "id": "fake__ni2__so32",
-      "cation": "Ni2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH13"
     },
     {
       "id": "fake__al3__cl",
@@ -1333,12 +1260,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!T14"
     },
     {
-      "id": "fake__al3__so32",
-      "cation": "Al3+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH14"
-    },
-    {
       "id": "fake__bi3__cl",
       "cation": "Bi3+",
       "anion": "Cl-",
@@ -1367,12 +1288,6 @@ export const DECK_DATA = {
       "cation": "Bi3+",
       "anion": "PO43-",
       "sourceCell": "RAW!V15"
-    },
-    {
-      "id": "fake__bi3__so32",
-      "cation": "Bi3+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH15"
     },
     {
       "id": "fake__ca2__nh3",
@@ -1429,12 +1344,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V16"
     },
     {
-      "id": "fake__ca2__so32",
-      "cation": "Ca2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH16"
-    },
-    {
       "id": "fake__mg2__cl",
       "cation": "Mg2+",
       "anion": "Cl-",
@@ -1483,12 +1392,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!T19"
     },
     {
-      "id": "fake__mg2__so32",
-      "cation": "Mg2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH19"
-    },
-    {
       "id": "fake__pb2__scn",
       "cation": "Pb2+",
       "anion": "SCN-",
@@ -1505,12 +1408,6 @@ export const DECK_DATA = {
       "cation": "Pb2+",
       "anion": "PO43-",
       "sourceCell": "RAW!V20"
-    },
-    {
-      "id": "fake__pb2__so32",
-      "cation": "Pb2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH20"
     },
     {
       "id": "fake__sr2__nh3",
@@ -1567,12 +1464,6 @@ export const DECK_DATA = {
       "sourceCell": "RAW!V21"
     },
     {
-      "id": "fake__sr2__so32",
-      "cation": "Sr2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH21"
-    },
-    {
       "id": "fake__zn2__cl",
       "cation": "Zn2+",
       "anion": "Cl-",
@@ -1613,12 +1504,6 @@ export const DECK_DATA = {
       "cation": "Zn2+",
       "anion": "PO43-",
       "sourceCell": "RAW!V22"
-    },
-    {
-      "id": "fake__zn2__so32",
-      "cation": "Zn2+",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH22"
     },
     {
       "id": "fake__mno4__oh",
@@ -1691,12 +1576,6 @@ export const DECK_DATA = {
       "cation": "MnO4-",
       "anion": "PO43-",
       "sourceCell": "RAW!V25"
-    },
-    {
-      "id": "fake__mno4__so32",
-      "cation": "MnO4-",
-      "anion": "SO32-",
-      "sourceCell": "RAW!AH25"
     }
   ]
 };

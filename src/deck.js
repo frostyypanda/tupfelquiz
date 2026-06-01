@@ -24,6 +24,23 @@ export function pickFlashcard(realCards, fakeCards, fakePercent, rng = Math.rand
   return useFake ? makeFakeCard(picked) : makeRealCard(picked);
 }
 
+export function pickFakeCard(fakeCards, rng = Math.random) {
+  return makeFakeCard(fakeCards[Math.floor(rng() * fakeCards.length)]);
+}
+
+export function shouldShowFake(fakeCards, fakePercent, rng = Math.random) {
+  return fakeCards.length > 0 && rng() * 100 < clampFakePercent(fakePercent);
+}
+
+export function shuffle(items, rng = Math.random) {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(rng() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
 export function makeRealCard(card) {
   return {
     ...card,

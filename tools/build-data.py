@@ -16,6 +16,10 @@ OUTPUT = Path("src/data.js")
 
 PROPERTY_COLUMNS = {"Eigenfarbe", "Flammenfärbung", "pH-Papier", "extra Hinweise"}
 PROPERTY_ROWS = {"Eigenfarbe", "pH-Papier", "extra Hinweise", "I2 + H+", "I2"}
+MARKER_ROW_RANGE = range(2, 30)
+MARKER_COLUMN_RANGE = range(2, 28)
+MARKER_ROW_RANGE_LABEL = "A2:A29"
+MARKER_COLUMN_RANGE_LABEL = "B1:AA1"
 
 
 def clean(value: object) -> str:
@@ -49,13 +53,14 @@ def is_pink_fill(rgb: str) -> bool:
 def marked_headers(sheet) -> tuple[list[str], list[str]]:
     rows = [
         clean(sheet.cell(row, 1).value)
-        for row in range(2, sheet.max_row + 1)
+        for row in MARKER_ROW_RANGE
         if sheet.cell(row, 1).fill.fill_type and clean(sheet.cell(row, 1).value)
     ]
     columns = [
         clean(sheet.cell(1, column).value)
-        for column in range(2, sheet.max_column + 1)
-        if sheet.cell(1, column).fill.fill_type and clean(sheet.cell(1, column).value)
+        for column in MARKER_COLUMN_RANGE
+        if sheet.cell(1, column).fill.fill_type
+        and clean(sheet.cell(1, column).value)
     ]
     return rows, columns
 
@@ -112,7 +117,9 @@ def build_data() -> dict[str, object]:
             "workbook": WORKBOOK.name,
             "sheet": SHEET_NAME,
             "markerSheet": MARKER_SHEET_NAME,
-            "pinkRule": "Rows are selected when column A is filled in the marker sheet; columns are selected when row 1 is filled.",
+            "selectedRowRange": f"{MARKER_SHEET_NAME}!{MARKER_ROW_RANGE_LABEL}",
+            "selectedColumnRange": f"{MARKER_SHEET_NAME}!{MARKER_COLUMN_RANGE_LABEL}",
+            "pinkRule": "Rows are selected only from A2:A29 when column A is filled; columns are selected only from B1:AA1 when row 1 is filled.",
             "selectedRows": selected_rows,
             "selectedColumns": selected_columns,
         },

@@ -10,8 +10,9 @@ https://frostyypanda.github.io/tupfelquiz
 
 - Shows a `cation + anion` pair on the front of a card.
 - Flips on click to show the product or observation.
-- Includes reactions at the intersection of pink-filled column-A rows and pink-filled row-1 columns from `Export important`, read from `RAW`.
+- Includes reactions at the intersection of pink-filled `Export important!A2:A29` rows and pink-filled `Export important!B1:AA1` columns, read from `RAW`.
 - Adds fake cards from blank selected intersections according to the fake percentage entered from `0` to `100`.
+- After flipping, mark each real card as `Know` or `Don't know`; the next round contains only missed cards.
 
 ## Development
 
