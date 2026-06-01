@@ -8,6 +8,7 @@ The app helps practice qualitative spot-test observations from `Tüpfeltabelle.x
 
 ## What it does
 - Shows a reaction drill for one source-table pair at a time.
+- Samples "nothing visible" prompts at about 20% in the default reaction drill.
 - Lets the learner answer the outcome type and, for solutions or precipitates, the observed color set.
 - Includes blank source-table pairs as "nothing visible" prompts.
 - Shows a color hunt mode where a fixed ion plus target color asks for every matching reagent in that row.
@@ -29,3 +30,4 @@ The app helps practice qualitative spot-test observations from `Tüpfeltabelle.x
 |------|----------|-----|-----|
 | 2026-06-01 | Publish as a no-build static ES module app from the repo root. | GitHub Pages can serve it directly at `/tupfelquiz` without a build pipeline. | Codex |
 | 2026-06-01 | Keep original observations visible after every answer. | Rule-based classification can simplify training, but the raw note is the source of truth. | Codex |
+| 2026-06-01 | Cap default reaction-drill "nothing visible" prompts at about 20%. | Uniform table sampling over-represents blanks and makes practice feel too empty. | Codex |

@@ -41,6 +41,7 @@ export const COLORS = [
 ];
 
 const CORE_OUTCOMES = new Set(["none", "solution", "precipitate", "other"]);
+const DEFAULT_NOTHING_RATE = 0.2;
 
 export function colorById(id) {
   return COLORS.find((color) => color.id === id);
@@ -98,13 +99,28 @@ export function pickReactionQuestion(reactions, options = {}, rng = Math.random)
   if (pool.length === 0) {
     throw new Error("No reactions match the selected filters.");
   }
-  const reaction = pool[Math.floor(rng() * pool.length)];
+  const reaction = pickReaction(pool, options, rng);
   return {
     id: `reaction:${reaction.id}:${Date.now()}`,
     kind: "reaction",
     reaction,
     prompt: `${reaction.primary} + ${reaction.secondary}`,
   };
+}
+
+function pickReaction(pool, options, rng) {
+  if ((options.outcome ?? "all") !== "all") {
+    return pool[Math.floor(rng() * pool.length)];
+  }
+
+  const nonePool = pool.filter((reaction) => reaction.outcome === "none");
+  const visiblePool = pool.filter((reaction) => reaction.outcome !== "none");
+  if (nonePool.length === 0 || visiblePool.length === 0) {
+    return pool[Math.floor(rng() * pool.length)];
+  }
+
+  const targetPool = rng() < DEFAULT_NOTHING_RATE ? nonePool : visiblePool;
+  return targetPool[Math.floor(rng() * targetPool.length)];
 }
 
 export function evaluateReactionAnswer(question, answer) {

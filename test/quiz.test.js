@@ -7,6 +7,7 @@ import {
   evaluateColorHuntAnswer,
   evaluateReactionAnswer,
   pickColorHuntQuestion,
+  pickReactionQuestion,
   reactionPool,
 } from "../src/quiz.js";
 
@@ -36,6 +37,19 @@ test("blank source-table cells are accepted as nothing visible", () => {
   assert.equal(result.correct, true);
 });
 
+test("all-mode reaction picking reserves roughly one fifth for nothing prompts", () => {
+  const reactions = [
+    sampleReaction("none-1", "none"),
+    sampleReaction("none-2", "none"),
+    sampleReaction("visible-1", "precipitate"),
+    sampleReaction("visible-2", "solution"),
+  ];
+
+  assert.equal(pickReactionQuestion(reactions, { outcome: "all" }, sequenceRng([0.19, 0])).reaction.outcome, "none");
+  assert.notEqual(pickReactionQuestion(reactions, { outcome: "all" }, sequenceRng([0.2, 0])).reaction.outcome, "none");
+  assert.equal(pickReactionQuestion(reactions, { outcome: "none" }, sequenceRng([0.99])).reaction.outcome, "none");
+});
+
 test("color hunt accepts exactly all expected matches", () => {
   const question = {
     primary: "Fe3+",
@@ -59,3 +73,20 @@ test("color hunt can generate fake no-match prompts", () => {
   assert.deepEqual(fakeQuestion.matches, []);
   assert.equal(evaluateColorHuntAnswer(fakeQuestion, []).correct, true);
 });
+
+function sampleReaction(id, outcome) {
+  return {
+    id,
+    primary: "Ag+",
+    secondary: id,
+    observation: outcome === "none" ? "" : "weiß",
+    outcome,
+    colors: outcome === "none" ? [] : ["white"],
+    inCoreDrill: true,
+  };
+}
+
+function sequenceRng(values) {
+  let index = 0;
+  return () => values[index++] ?? 0;
+}
