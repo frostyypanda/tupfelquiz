@@ -1,156 +1,167 @@
-import { REACTIONS } from "./data.js";
-import {
-  evaluateColorHuntAnswer,
-  evaluateReactionAnswer,
-  pickColorHuntQuestion,
-  pickReactionQuestion,
-} from "./quiz.js";
-import { renderApp } from "./render.js";
+import { DECK_DATA, FAKE_CARDS, REAL_CARDS } from "./data.js";
+import { clampFakePercent, pickFlashcard } from "./deck.js";
 
-const STORAGE_KEY = "tupfelquiz:v1";
+const STORAGE_KEY = "tupfelquiz:flashcards:v1";
 
 const state = {
-  tab: "reaction",
-  reactionMode: "all",
-  reactionQuestion: null,
-  reactionFeedback: null,
-  selectedOutcome: null,
-  selectedColors: new Set(),
-  huntQuestion: null,
-  huntFeedback: null,
-  selectedHunt: new Set(),
-  tableSearch: "",
-  tableOutcome: "all",
-  tableColor: "all",
-  stats: loadStats(),
+  fakePercent: loadFakePercent(),
+  card: null,
+  flipped: false,
+  seen: 0,
+  realSeen: 0,
+  fakeSeen: 0,
 };
 
 const app = document.querySelector("#app");
 
 function init() {
-  nextReaction();
-  nextHunt();
+  nextCard();
   render();
   app.addEventListener("click", handleClick);
   app.addEventListener("input", handleInput);
-  app.addEventListener("change", handleInput);
 }
 
 function handleClick(event) {
-  const target = event.target.closest("[data-action]");
-  if (!target) return;
-
-  const { action } = target.dataset;
-  if (action === "tab") state.tab = target.dataset.tab;
-  if (action === "outcome") selectOutcome(target.dataset.outcome);
-  if (action === "color") toggleSetValue(state.selectedColors, target.dataset.color);
-  if (action === "hunt-option") toggleSetValue(state.selectedHunt, target.dataset.option);
-  if (action === "check-reaction") checkReaction();
-  if (action === "check-hunt") checkHunt();
-  if (action === "next-reaction") nextReaction();
-  if (action === "next-hunt") nextHunt();
-  if (action === "reset-stats") resetStats();
+  const action = event.target.closest("[data-action]")?.dataset.action;
+  if (action === "flip") state.flipped = !state.flipped;
+  if (action === "next") nextCard();
+  if (action === "reset") resetSession();
   render();
 }
 
 function handleInput(event) {
-  const { id, value } = event.target;
-  if (id === "reaction-mode") {
-    state.reactionMode = value;
-    nextReaction();
-  }
-  if (id === "table-search") state.tableSearch = value;
-  if (id === "table-outcome") state.tableOutcome = value;
-  if (id === "table-color") state.tableColor = value;
+  if (!["fake-percent", "fake-range"].includes(event.target.id)) return;
+  state.fakePercent = clampFakePercent(event.target.value);
+  saveFakePercent();
+  syncInputs();
   render();
 }
 
-function selectOutcome(outcome) {
-  state.selectedOutcome = outcome;
-  state.reactionFeedback = null;
-  if (!["solution", "precipitate"].includes(outcome)) state.selectedColors.clear();
+function syncInputs() {
+  const number = document.querySelector("#fake-percent");
+  const range = document.querySelector("#fake-range");
+  if (number) number.value = state.fakePercent;
+  if (range) range.value = state.fakePercent;
 }
 
-function nextReaction() {
-  state.reactionQuestion = pickReactionQuestion(REACTIONS, { outcome: state.reactionMode });
-  state.reactionFeedback = null;
-  state.selectedOutcome = null;
-  state.selectedColors.clear();
+function nextCard() {
+  state.card = pickFlashcard(REAL_CARDS, FAKE_CARDS, state.fakePercent);
+  state.flipped = false;
+  state.seen += 1;
+  if (state.card.fake) state.fakeSeen += 1;
+  else state.realSeen += 1;
 }
 
-function nextHunt() {
-  state.huntQuestion = pickColorHuntQuestion(REACTIONS);
-  state.huntFeedback = null;
-  state.selectedHunt.clear();
-}
-
-function checkReaction() {
-  if (!state.selectedOutcome) return;
-  const answer = { outcome: state.selectedOutcome, colors: [...state.selectedColors] };
-  state.reactionFeedback = evaluateReactionAnswer(state.reactionQuestion, answer);
-  record("reaction", state.reactionFeedback.correct);
-}
-
-function checkHunt() {
-  state.huntFeedback = evaluateColorHuntAnswer(state.huntQuestion, [...state.selectedHunt]);
-  record("hunt", state.huntFeedback.correct);
-}
-
-function record(kind, correct) {
-  const stats = state.stats[kind];
-  stats.answered += 1;
-  stats.correct += correct ? 1 : 0;
-  state.stats.streak = correct ? state.stats.streak + 1 : 0;
-  state.stats.bestStreak = Math.max(state.stats.bestStreak, state.stats.streak);
-  saveStats();
-}
-
-function resetStats() {
-  state.stats = defaultStats();
-  saveStats();
-}
-
-function toggleSetValue(set, value) {
-  if (set.has(value)) set.delete(value);
-  else set.add(value);
-  state.reactionFeedback = null;
-  state.huntFeedback = null;
+function resetSession() {
+  state.seen = 0;
+  state.realSeen = 0;
+  state.fakeSeen = 0;
+  nextCard();
 }
 
 function render() {
-  app.innerHTML = renderApp(state);
+  app.innerHTML = `
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Pink-marked Tüpfeln cards</p>
+        <h1>Tüpfelquiz</h1>
+      </div>
+      <div class="source-pill">${REAL_CARDS.length} real cards</div>
+    </header>
+    <main class="layout">
+      <section class="study-panel">
+        ${renderCard()}
+        <div class="actions">
+          <button class="primary" data-action="next">Next card</button>
+          <button data-action="reset">Reset session</button>
+        </div>
+      </section>
+      <aside class="control-panel">
+        ${renderFakeControl()}
+        ${renderStats()}
+        ${renderCardList()}
+      </aside>
+    </main>
+  `;
 }
 
-function loadStats() {
+function renderCard() {
+  const sideClass = state.flipped ? "flipped" : "";
+  const cardType = state.card.fake ? "Fake" : "Real";
+  return `
+    <button class="flashcard ${sideClass}" data-action="flip" aria-label="Flip flashcard">
+      <span class="card-corner">${cardType}</span>
+      <span class="card-face card-front">
+        <span>Cation + anion</span>
+        <strong>${escapeHtml(state.card.front)}</strong>
+      </span>
+      <span class="card-face card-back">
+        <span>Product</span>
+        <strong>${escapeHtml(state.card.back)}</strong>
+        <small>${escapeHtml(state.card.sourceCell)}</small>
+      </span>
+    </button>
+  `;
+}
+
+function renderFakeControl() {
+  return `
+    <section class="panel">
+      <label for="fake-percent">
+        <span>Fake cards</span>
+        <input id="fake-percent" type="number" inputmode="numeric" min="0" max="100" value="${state.fakePercent}">
+      </label>
+      <input id="fake-range" class="range" type="range" min="0" max="100" value="${state.fakePercent}" aria-label="Fake card percentage">
+      <p class="muted">${state.fakePercent}% of new cards will be blank-pair fakes.</p>
+    </section>
+  `;
+}
+
+function renderStats() {
+  const fakeRate = state.seen ? Math.round((state.fakeSeen / state.seen) * 100) : 0;
+  return `
+    <section class="panel stat-grid">
+      ${stat("Seen", state.seen)}
+      ${stat("Real", state.realSeen)}
+      ${stat("Fake", state.fakeSeen)}
+      ${stat("Run fake rate", `${fakeRate}%`)}
+    </section>
+  `;
+}
+
+function renderCardList() {
+  return `
+    <section class="panel">
+      <p class="eyebrow">Included from ${escapeHtml(DECK_DATA.source.sheet)}</p>
+      <div class="mini-list">
+        ${REAL_CARDS.map((card) => `<span>${escapeHtml(card.cation)} + ${escapeHtml(card.anion)}</span>`).join("")}
+      </div>
+    </section>
+  `;
+}
+
+function stat(label, value) {
+  return `<div><dt>${label}</dt><dd>${value}</dd></div>`;
+}
+
+function loadFakePercent() {
   try {
-    return mergeStats(JSON.parse(localStorage.getItem(STORAGE_KEY)));
+    return clampFakePercent(localStorage.getItem(STORAGE_KEY) ?? 20);
   } catch {
-    return defaultStats();
+    return 20;
   }
 }
 
-function mergeStats(saved) {
-  const fallback = defaultStats();
-  if (!saved) return fallback;
-  return {
-    reaction: { ...fallback.reaction, ...saved.reaction },
-    hunt: { ...fallback.hunt, ...saved.hunt },
-    streak: saved.streak ?? 0,
-    bestStreak: saved.bestStreak ?? 0,
-  };
+function saveFakePercent() {
+  try {
+    localStorage.setItem(STORAGE_KEY, String(state.fakePercent));
+  } catch {
+    // Storage can be unavailable in strict browser modes; the quiz still works.
+  }
 }
 
-function saveStats() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.stats));
-}
-
-function defaultStats() {
-  return {
-    reaction: { answered: 0, correct: 0 },
-    hunt: { answered: 0, correct: 0 },
-    streak: 0,
-    bestStreak: 0,
-  };
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 }
 
 init();

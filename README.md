@@ -1,16 +1,17 @@
 # Tüpfelquiz
 
-A static quiz app for practicing qualitative spot-test observations from `Tüpfeltabelle.xlsx`.
+Quizlet-style flashcards for the pink-marked reactions in `Tüpfeltabelle.xlsx`.
 
 Published site:
 
 https://frostyypanda.github.io/tupfelquiz
 
-## Practice modes
+## What it does
 
-- Reaction drill: answer whether a pair gives nothing visible, a solution, a precipitate, or another observation.
-- Color hunt: given one ion and one color, select every matching reagent in that row.
-- Source table: search the normalized reaction data and compare it with the original observation note.
+- Shows a `cation + anion` pair on the front of a card.
+- Flips on click to show the product or observation.
+- Includes only pink-marked reaction cells from the workbook's `RAW` sheet.
+- Adds fake cards from blank table pairs according to the fake percentage entered from `0` to `100`.
 
 ## Development
 
@@ -23,10 +24,8 @@ Then open `http://localhost:4173`.
 
 ## Data
 
-The app data is generated from the workbook's `RAW` sheet into `src/data.js`.
+The app data is generated into `src/data.js`.
 
 ```bash
 python3 tools/build-data.py
 ```
-
-Blank and whitespace-only cells are normalized as no visible reaction. Cells describing gas, odor, pH, flame color, oxidation, and other non-color clues are classified as `other observation`.
