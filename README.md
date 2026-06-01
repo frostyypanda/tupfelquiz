@@ -1,6 +1,6 @@
 # Tüpfelquiz
 
-Quizlet-style flashcards for the pink-marked reactions in `Tüpfeltabelle.xlsx`.
+Quizlet-style flashcards for the reactions selected by pink row and column headers in `Tüpfeltabelle.xlsx`.
 
 Published site:
 
@@ -10,8 +10,8 @@ https://frostyypanda.github.io/tupfelquiz
 
 - Shows a `cation + anion` pair on the front of a card.
 - Flips on click to show the product or observation.
-- Includes only pink-marked reaction cells from the workbook's `RAW` sheet.
-- Adds fake cards from blank table pairs according to the fake percentage entered from `0` to `100`.
+- Includes reactions at the intersection of pink-filled column-A rows and pink-filled row-1 columns from `Export important`, read from `RAW`.
+- Adds fake cards from blank selected intersections according to the fake percentage entered from `0` to `100`.
 
 ## Development
 

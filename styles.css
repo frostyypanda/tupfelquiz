@@ -249,6 +249,9 @@ dd {
 .mini-list {
   display: grid;
   gap: 8px;
+  max-height: 320px;
+  overflow: auto;
+  margin-top: 14px;
 }
 
 .mini-list span {

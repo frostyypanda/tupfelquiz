@@ -11,6 +11,7 @@ from openpyxl import load_workbook
 
 WORKBOOK = Path("/Users/kei/Downloads/Tüpfeltabelle.xlsx")
 SHEET_NAME = "RAW"
+MARKER_SHEET_NAME = "Export important"
 OUTPUT = Path("src/data.js")
 
 PROPERTY_COLUMNS = {"Eigenfarbe", "Flammenfärbung", "pH-Papier", "extra Hinweise"}
@@ -45,6 +46,20 @@ def is_pink_fill(rgb: str) -> bool:
     return 285 <= degrees <= 345 and blue >= 80 and red >= 110 and lightness >= 0.35
 
 
+def marked_headers(sheet) -> tuple[list[str], list[str]]:
+    rows = [
+        clean(sheet.cell(row, 1).value)
+        for row in range(2, sheet.max_row + 1)
+        if sheet.cell(row, 1).fill.fill_type and clean(sheet.cell(row, 1).value)
+    ]
+    columns = [
+        clean(sheet.cell(1, column).value)
+        for column in range(2, sheet.max_column + 1)
+        if sheet.cell(1, column).fill.fill_type and clean(sheet.cell(1, column).value)
+    ]
+    return rows, columns
+
+
 def core_pair(primary: str, secondary: str) -> bool:
     return (
         primary
@@ -58,15 +73,21 @@ def core_pair(primary: str, secondary: str) -> bool:
 def build_data() -> dict[str, object]:
     workbook = load_workbook(WORKBOOK, data_only=True)
     sheet = workbook[SHEET_NAME]
+    marker_sheet = workbook[MARKER_SHEET_NAME]
     headers = [clean(sheet.cell(1, column).value) for column in range(1, sheet.max_column + 1)]
+    selected_rows, selected_columns = marked_headers(marker_sheet)
+    selected_row_set = set(selected_rows)
+    selected_column_set = set(selected_columns)
     cards = []
     fakes = []
 
     for row in range(2, sheet.max_row + 1):
         cation = clean(sheet.cell(row, 1).value)
+        if cation not in selected_row_set:
+            continue
         for column in range(2, sheet.max_column + 1):
             anion = headers[column - 1]
-            if not core_pair(cation, anion):
+            if anion not in selected_column_set or not core_pair(cation, anion):
                 continue
 
             cell = sheet.cell(row, column)
@@ -74,13 +95,13 @@ def build_data() -> dict[str, object]:
             rgb = fill_rgb(cell)
             pair = {"cation": cation, "anion": anion, "sourceCell": f"{SHEET_NAME}!{cell.coordinate}"}
 
-            if product and is_pink_fill(rgb):
+            if product:
                 cards.append(
                     {
                         "id": f"{slug(cation)}__{slug(anion)}",
                         **pair,
                         "product": product,
-                        "fill": rgb[-6:],
+                        "fill": rgb[-6:] if is_pink_fill(rgb) else "",
                     }
                 )
             elif not product:
@@ -90,7 +111,10 @@ def build_data() -> dict[str, object]:
         "source": {
             "workbook": WORKBOOK.name,
             "sheet": SHEET_NAME,
-            "pinkRule": "RGB fills with hue 285-345 degrees are treated as pink-marked.",
+            "markerSheet": MARKER_SHEET_NAME,
+            "pinkRule": "Rows are selected when column A is filled in the marker sheet; columns are selected when row 1 is filled.",
+            "selectedRows": selected_rows,
+            "selectedColumns": selected_columns,
         },
         "cards": cards,
         "fakes": fakes,

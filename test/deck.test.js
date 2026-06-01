@@ -1,16 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { FAKE_CARDS, REAL_CARDS } from "../src/data.js";
+import { DECK_DATA, FAKE_CARDS, REAL_CARDS } from "../src/data.js";
 import { clampFakePercent, createRng, pickFlashcard } from "../src/deck.js";
 
-test("deck only includes the pink-marked real cards", () => {
-  assert.equal(REAL_CARDS.length, 4);
-  assert.deepEqual(
-    REAL_CARDS.map((card) => `${card.cation} + ${card.anion}`),
-    ["Ag+ + Cl-", "Fe2+ + NO2-", "Mn2+ + OH-", "Mn2+ + S2-"],
-  );
-  assert.ok(FAKE_CARDS.length > 500);
+test("deck uses pink-marked rows and columns from the marker sheet", () => {
+  assert.equal(DECK_DATA.source.markerSheet, "Export important");
+  assert.equal(DECK_DATA.source.selectedRows.length, 19);
+  assert.equal(DECK_DATA.source.selectedColumns.length, 13);
+  assert.equal(REAL_CARDS.length, 86);
+  assert.equal(FAKE_CARDS.length, 161);
+  assert.ok(REAL_CARDS.some((card) => card.cation === "Ag+" && card.anion === "Cl-"));
+  assert.ok(REAL_CARDS.some((card) => card.cation === "Pb2+" && card.anion === "I-"));
 });
 
 test("fake percentage is clamped to the 0-100 range", () => {

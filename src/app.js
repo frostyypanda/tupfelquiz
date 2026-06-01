@@ -132,7 +132,8 @@ function renderStats() {
 function renderCardList() {
   return `
     <section class="panel">
-      <p class="eyebrow">Included from ${escapeHtml(DECK_DATA.source.sheet)}</p>
+      <p class="eyebrow">Marked in ${escapeHtml(DECK_DATA.source.markerSheet)}</p>
+      <p class="muted">${DECK_DATA.source.selectedRows.length} rows x ${DECK_DATA.source.selectedColumns.length} columns, read from ${escapeHtml(DECK_DATA.source.sheet)}.</p>
       <div class="mini-list">
         ${REAL_CARDS.map((card) => `<span>${escapeHtml(card.cation)} + ${escapeHtml(card.anion)}</span>`).join("")}
       </div>
